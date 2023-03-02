@@ -9,6 +9,7 @@ namespace Chat.Room.Service.Di
     public static class ServicesDi
     {
         public static IServiceCollection AddServices(this IServiceCollection services) =>
-            services.AddTransient<ILoginService, LoginService>();
+            services.AddTransient<ILoginService, LoginService>()
+                    .AddTransient<ITokenService, TokenService>();
     }
 }

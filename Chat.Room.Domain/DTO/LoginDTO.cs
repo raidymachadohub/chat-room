@@ -11,7 +11,10 @@ namespace Chat.Room.Domain.DTO
 
         [JsonProperty(Required = Required.Always)]
         public string password { get; set; }
-
+        
+        [JsonConstructor]
+        public LoginDTO(){}
+        
         [JsonConstructor]
         public LoginDTO(string username, string password)
         {

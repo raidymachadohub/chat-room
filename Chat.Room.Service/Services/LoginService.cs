@@ -1,6 +1,7 @@
 ﻿using Chat.Room.Domain.Model;
 using Chat.Room.Infrastructure.Repositories.Interfaces;
 using Chat.Room.Service.Services.Interfaces;
+using Chat.Room.Shared.FlowControl.Model;
 
 namespace Chat.Room.Service.Services
 {
@@ -13,14 +14,14 @@ namespace Chat.Room.Service.Services
             _loginRepository = loginRepository;
         }
 
-        public async Task<Login> Authenticate(Login login)
+        public async Task<Result<Login>> AuthenticateAsync(Login login)
         {
-          return await  _loginRepository.Authenticate(login);
+            return await _loginRepository.AuthenticateAsync(login);
         }
 
-        public async Task<Login> Insert(Login login)
+        public async Task<Result<Login>> AddOrUpdateAsync(Login login)
         {
-            return await _loginRepository.Insert(login);
+            return await _loginRepository.AddOrUpdateAsync(login);
         }
     }
 }

@@ -1,4 +1,6 @@
+using Chat.Room.Application.Di;
 using Chat.Room.Application.Hubs;
+using Chat.Room.Application.Middleware;
 using Chat.Room.Infrastructure.Di;
 using Chat.Room.Service.Di;
 
@@ -11,6 +13,7 @@ builder.Host.ConfigureServices((hostContext, services) =>
 {
     var config = hostContext.Configuration;
     services
+        .AddStrategies()
         .AddAutoMapper()
         .AddRepositories()
         .AddServices()
@@ -20,6 +23,7 @@ builder.Host.ConfigureServices((hostContext, services) =>
 
 var app = builder.Build();
 
+app.UseMiddleware<HeaderMiddleware>();
 app.AddMigration();
 
 if (!app.Environment.IsDevelopment())
@@ -43,7 +47,7 @@ app.UseCors(x => x
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Login}/{action=Index}/{id?}");
 
 app.MapHub<ChatHub>("/chatHub");
 

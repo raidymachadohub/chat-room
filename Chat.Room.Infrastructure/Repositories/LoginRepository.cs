@@ -1,6 +1,8 @@
 ﻿using Chat.Room.Domain.Model;
 using Chat.Room.Infrastructure.Context;
 using Chat.Room.Infrastructure.Repositories.Interfaces;
+using Chat.Room.Shared.FlowControl.Enum;
+using Chat.Room.Shared.FlowControl.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace Chat.Room.Infrastructure.Repositories
@@ -14,26 +16,42 @@ namespace Chat.Room.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<Login> Insert(Login login)
+        public async Task<Result<Login>> AddOrUpdateAsync(Login login)
         {
-            await _context.AddAsync(login);
+            var existLogin = await _context.Login.AsQueryable()
+                .FirstOrDefaultAsync(log => log.Username == login.Username);
+
+            if (existLogin == null)
+            {
+                await _context.AddAsync(login);
+                await _context.SaveChangesAsync();
+                return Result.Ok(login);
+            }
+
+            var loginWithPassword = await _context.Login.AsQueryable()
+                .FirstOrDefaultAsync(log => log.Username == login.Username && log.Password == login.Password);
+
+            if (loginWithPassword == null)
+                return Result.Fail<Login>(new Error(ErrorType.Business,
+                    $"Username: {existLogin.Username} already used, try another"));
+
+            _context.Update(existLogin);
             await _context.SaveChangesAsync();
-            return login;
+            return Result.Ok(login);
         }
 
-        public async Task<Login> Authenticate(Login login)
+        public async Task<Result<Login>> AuthenticateAsync(Login login)
         {
             if (_context.Login == null)
-                throw new Exception("Object reference Login is null.");
+                return Result.Fail<Login>(new Error(ErrorType.Business, "Object Login is null."));
 
             var userLogin = await _context.Login.AsQueryable()
-                                        .Where(log => log.Username == login.Username && log.Password == login.Password)
-                                        .FirstOrDefaultAsync();
-
+                .FirstOrDefaultAsync(log => log.Username == login.Username && log.Password == login.Password);
+            
             if (userLogin == null)
-                throw new Exception("User or password is incorrect.");
+                return Result.Fail<Login>(new Error(ErrorType.Business, "User or password is incorrect."));
 
-            return userLogin;
+            return Result.Ok(userLogin);
         }
     }
 }
