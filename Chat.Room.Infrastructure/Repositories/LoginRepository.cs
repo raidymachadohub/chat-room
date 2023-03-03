@@ -18,6 +18,10 @@ namespace Chat.Room.Infrastructure.Repositories
 
         public async Task<Result<Login>> AddOrUpdateAsync(Login login)
         {
+            if (_context.Login == null)
+                return Result.Fail<Login>(new Error(ErrorType.Business,
+                    $"Context Login is null"));
+
             var existLogin = await _context.Login.AsQueryable()
                 .FirstOrDefaultAsync(log => log.Username == login.Username);
 
@@ -47,7 +51,7 @@ namespace Chat.Room.Infrastructure.Repositories
 
             var userLogin = await _context.Login.AsQueryable()
                 .FirstOrDefaultAsync(log => log.Username == login.Username && log.Password == login.Password);
-            
+
             if (userLogin == null)
                 return Result.Fail<Login>(new Error(ErrorType.Business, "User or password is incorrect."));
 

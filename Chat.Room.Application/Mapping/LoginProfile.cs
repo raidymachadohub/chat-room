@@ -8,7 +8,7 @@ namespace Chat.Room.Application.Mapping
     {
         public LoginProfile()
         {
-            CreateMap<LoginDTO, Login>()
+            CreateMap<LoginDto, Login>()
                 .ForMember(x => x.Id, p => p.MapFrom(d => d.id))
                 .ForMember(x => x.Username, p => p.MapFrom(d => d.username))
                 .ForMember(x => x.Password, p => p.MapFrom(d => d.password))

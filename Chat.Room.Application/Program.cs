@@ -17,8 +17,13 @@ builder.Host.ConfigureServices((hostContext, services) =>
         .AddAutoMapper()
         .AddRepositories()
         .AddServices()
+        .AddClients()
+        .AddChatSession()
+        .AddRabbitMQ()
+        .AddHttpClient(config)
         .AddAuthentication(config)
-        .AddDbContext(config);
+        .AddDbContext(config)
+        .AddHttpContextAccessor();
 });
 
 var app = builder.Build();

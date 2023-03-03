@@ -10,6 +10,7 @@ namespace Chat.Room.Service.Di
     {
         public static IServiceCollection AddServices(this IServiceCollection services) =>
             services.AddTransient<ILoginService, LoginService>()
-                    .AddTransient<ITokenService, TokenService>();
+                    .AddTransient<ITokenService, TokenService>()
+                    .AddTransient<IStockService, StockService>();
     }
 }

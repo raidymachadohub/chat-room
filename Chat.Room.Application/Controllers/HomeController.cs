@@ -1,5 +1,5 @@
 ﻿using System.Security.Claims;
-using Chat.Room.Application.Strategies.Interfaces;
+using Chat.Room.Infrastructure.Configuration.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,18 +8,17 @@ namespace Chat.Room.Application.Controllers
     [Authorize]
     public class HomeController : Controller
     {
-        private readonly IStrategyExecution _strategyExecution;
-        
-        public HomeController(IStrategyExecution strategyExecution)
+        private readonly ILoginSession _loginSession;
+
+        public HomeController(ILoginSession loginSession)
         {
-            _strategyExecution = strategyExecution;
+            _loginSession = loginSession;
         }
 
-        public async Task<IActionResult> Index()
+        public Task<IActionResult> Index()
         {
-            var identity = HttpContext.User.Identity as ClaimsIdentity;
-            ViewBag.Username = identity.Name;
-            return View();
+            ViewBag.Username = _loginSession.Username;
+            return Task.FromResult<IActionResult>(View());
         }
     }
 }

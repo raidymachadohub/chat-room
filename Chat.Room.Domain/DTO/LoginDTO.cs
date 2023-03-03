@@ -2,7 +2,7 @@
 
 namespace Chat.Room.Domain.DTO
 {
-    public class LoginDTO
+    public class LoginDto
     {
         public long id { get; set; }
 
@@ -13,10 +13,10 @@ namespace Chat.Room.Domain.DTO
         public string password { get; set; }
         
         [JsonConstructor]
-        public LoginDTO(){}
+        public LoginDto(){}
         
         [JsonConstructor]
-        public LoginDTO(string username, string password)
+        public LoginDto(string username, string password)
         {
             this.username = username;
             this.password = password;

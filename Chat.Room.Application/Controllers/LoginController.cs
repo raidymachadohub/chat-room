@@ -34,7 +34,7 @@ namespace Chat.Room.Application.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Authenticate(LoginDTO loginDto)
+        public async Task<IActionResult> Authenticate(LoginDto loginDto)
         {
             if (string.IsNullOrEmpty(loginDto.username) || string.IsNullOrEmpty(loginDto.password))
                 return BadRequest("Username or Password must be not empty");
@@ -56,7 +56,7 @@ namespace Chat.Room.Application.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddLogin(LoginDTO loginDto)
+        public async Task<IActionResult> AddLogin(LoginDto loginDto)
         {
             if (string.IsNullOrEmpty(loginDto.username) || string.IsNullOrEmpty(loginDto.password))
                 return BadRequest("Username or Password must be not empty");

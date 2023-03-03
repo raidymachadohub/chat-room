@@ -1,4 +1,5 @@
 using Chat.Room.Application.Strategies.Interfaces;
+using Chat.Room.Shared.FlowControl.Enum;
 using Chat.Room.Shared.FlowControl.Model;
 
 namespace Chat.Room.Application.Strategies
@@ -7,7 +8,7 @@ namespace Chat.Room.Application.Strategies
     {
         private readonly IServiceProvider _serviceProvider;
 
-        private readonly Dictionary<string, Func<IServiceScope, IStrategy>> strategies =
+        private readonly Dictionary<string, Func<IServiceScope, IStrategy>> _strategies =
             new()
             {
                 { "COMMON", scope => scope.ServiceProvider.GetRequiredService<ICommonStrategy>() },
@@ -24,7 +25,10 @@ namespace Chat.Room.Application.Strategies
         {
             var key = TreatmentMessage(message);
 
-            strategies.TryGetValue(key, out var getStrategy);
+            if (!_strategies.TryGetValue(key, out var getStrategy))
+            {
+                return Result.Fail(new Error(ErrorType.Business, "Command incorrect in selected strategy"));
+            }
 
             using var scope = _serviceProvider.CreateScope();
             var strategy = getStrategy(scope);
