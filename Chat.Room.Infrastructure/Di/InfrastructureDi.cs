@@ -13,6 +13,7 @@ using Chat.Room.Infrastructure.Client;
 using Chat.Room.Infrastructure.Client.Interfaces;
 using Chat.Room.Infrastructure.Configuration.Interfaces;
 using Chat.Room.Infrastructure.Configuration;
+using Chat.Room.Infrastructure.Context.Interfaces;
 using Chat.Room.Infrastructure.Facade;
 using Chat.Room.Infrastructure.Facade.Interfaces;
 
@@ -29,8 +30,7 @@ namespace Chat.Room.Infrastructure.Di
             if (connectionString == null)
                 throw new ArgumentNullException(nameof(connectionString));
 
-            services.AddDbContext<LiteContext>(options => options.UseSqlite(connectionString));
-
+            services.AddDbContext<ILiteContext, LiteContext>(options => options.UseSqlite(connectionString));
             return services;
         }
         public static IServiceCollection AddAutoMapper(this IServiceCollection services) =>

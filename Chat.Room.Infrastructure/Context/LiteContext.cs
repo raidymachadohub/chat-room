@@ -1,9 +1,10 @@
 ﻿using Chat.Room.Domain.Model;
 using Microsoft.EntityFrameworkCore;
+using Chat.Room.Infrastructure.Context.Interfaces;
 
 namespace Chat.Room.Infrastructure.Context
 {
-    public class LiteContext : DbContext
+    public class LiteContext : DbContext, ILiteContext
     {
         public LiteContext(DbContextOptions<LiteContext> options) : base(options) { }
 
@@ -13,6 +14,6 @@ namespace Chat.Room.Infrastructure.Context
             base.OnModelCreating(builder);
         }
 
-        public DbSet<Login>? Login { get; set; }
+        public virtual DbSet<Login>? Login { get; set; }
     }
 }

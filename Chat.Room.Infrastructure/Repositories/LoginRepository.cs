@@ -1,5 +1,5 @@
 ﻿using Chat.Room.Domain.Model;
-using Chat.Room.Infrastructure.Context;
+using Chat.Room.Infrastructure.Context.Interfaces;
 using Chat.Room.Infrastructure.Repositories.Interfaces;
 using Chat.Room.Shared.FlowControl.Enum;
 using Chat.Room.Shared.FlowControl.Model;
@@ -9,30 +9,30 @@ namespace Chat.Room.Infrastructure.Repositories
 {
     public class LoginRepository : ILoginRepository
     {
-        private readonly LiteContext _context;
+        private readonly ILiteContext _context;
 
-        public LoginRepository(LiteContext context)
+        public LoginRepository(ILiteContext context)
         {
             _context = context;
         }
 
         public async Task<Result<Login>> AddOrUpdateAsync(Login login)
         {
-            if (_context.Login == null)
+            if (_context.Set<Login>() == null)
                 return Result.Fail<Login>(new Error(ErrorType.Business,
                     $"Context Login is null"));
 
-            var existLogin = await _context.Login.AsQueryable()
+            var existLogin = await _context.Set<Login>()
                 .FirstOrDefaultAsync(log => log.Username == login.Username);
 
             if (existLogin == null)
             {
-                await _context.AddAsync(login);
-                await _context.SaveChangesAsync();
+                await _context.AddAsync(login, CancellationToken.None);
+                await _context.SaveChangesAsync(CancellationToken.None);
                 return Result.Ok(login);
             }
 
-            var loginWithPassword = await _context.Login.AsQueryable()
+            var loginWithPassword = await _context.Set<Login>()
                 .FirstOrDefaultAsync(log => log.Username == login.Username && log.Password == login.Password);
 
             if (loginWithPassword == null)
@@ -40,16 +40,16 @@ namespace Chat.Room.Infrastructure.Repositories
                     $"Username: {existLogin.Username} already used, try another"));
 
             _context.Update(existLogin);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(CancellationToken.None);
             return Result.Ok(login);
         }
 
         public async Task<Result<Login>> AuthenticateAsync(Login login)
         {
-            if (_context.Login == null)
+            if (_context.Set<Login>() == null)
                 return Result.Fail<Login>(new Error(ErrorType.Business, "Object Login is null."));
 
-            var userLogin = await _context.Login.AsQueryable()
+            var userLogin = await _context.Set<Login>()
                 .FirstOrDefaultAsync(log => log.Username == login.Username && log.Password == login.Password);
 
             if (userLogin == null)
